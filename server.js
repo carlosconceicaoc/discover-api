@@ -1,29 +1,50 @@
 const express = require('express')
 const app = express()
+let users = []
 
-app.listen('3000')
-
-// Criando rota base GET
-// app.route('/').get((req, res) => {
-//     res.send('Hello World!')
-// })
-
-// Criando rota base POST
-// middleware
-// informa como deve ser interpretado o conteúdo recebido no Request
-// app.use(express.json())
-
-// app.route('/').post((req, res) => res.send(req.body))
-
-// Criando rota base PUT
 app.use(express.json())
 
-let author = 'Carlos'
-app.route('/').put((req, res) => {
-    author = req.body.author
-    res.send('Registro atualizado')
+app.post('/cadastrar', (req, res) => {
+    users.push(req.body)
+    res.send('Usuário cadastrado')
 })
 
-app.route('/').get((req, res) => {
-    res.send(author)
+app.get('/', (req, res) => {
+    res.send(users)
 })
+
+app.get('/:id', (req, res) => {
+    let user = findById(req.params.id)
+    if (user) {
+        res.send(user)
+    } else {
+        res.send(`Registro não encontrado para o identificador ${req.params.id}`)
+    }
+})
+
+app.put('/:id', (req, res) => {
+    for (let user of users) {
+        if (user.id == req.params.id) {
+            user.id = req.body.id
+            user.nome = req.body.nome
+            user.idade = req.body.idade
+            res.send('Registro atualizado')
+            return
+        }
+    }
+    res.send('Registro não encontrado')
+})
+
+// app.delete('/:id', (req, res) => {
+//     for(let)
+// })
+
+function findById(id) {
+    for (let user of users) {
+        if (user.id == id) {
+            return user
+        }
+    }
+}
+
+app.listen('3000')
